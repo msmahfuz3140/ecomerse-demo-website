@@ -27,6 +27,7 @@ import {
   X,
   Flame,
   UserCheck,
+  Store,
 } from "lucide-react";
 import { useAuthStore } from "@/lib/store";
 import { api, fallbackProducts } from "@/lib/api";
@@ -203,16 +204,18 @@ export default function AdminPage() {
               <RefreshCw size={16} className={isLoading ? "animate-spin text-[#303d6e]" : ""} />
             </button>
 
-            {/* Admin User Info */}
+            {/* Admin/Seller User Info */}
             <div className="flex items-center gap-2 pl-2 border-l border-slate-200">
               <div className="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-700 flex items-center justify-center font-bold text-xs border border-amber-500/30">
-                <Crown size={15} />
+                {user?.role === "seller" ? <Store size={15} /> : <Crown size={15} />}
               </div>
               <div className="hidden md:block text-left">
-                <span className="text-xs font-bold text-slate-900 block leading-tight">
-                  {user?.name || "অ্যাডমিন"}
+                <span className="text-xs font-bold text-slate-900 block leading-tight truncate max-w-[130px]">
+                  {user?.name || "সিস্টেম অ্যাডমিন"}
                 </span>
-                <span className="text-[10px] text-slate-400 block leading-tight">Super Admin</span>
+                <span className="text-[10px] text-slate-400 block leading-tight">
+                  {user?.role === "seller" ? "Authorized Seller" : "Super Admin"}
+                </span>
               </div>
               <button
                 onClick={logout}
@@ -226,8 +229,25 @@ export default function AdminPage() {
         </div>
       </header>
 
-      {/* Role Alert if not logged in as Admin */}
-      {(!isLoggedIn || user?.role !== "admin") && (
+      {/* Role Banner */}
+      {user?.role === "seller" ? (
+        <div className="max-w-7xl mx-auto px-4 sm:px-8 mt-4">
+          <div className="bg-indigo-50 border border-indigo-200 rounded-2xl p-3.5 flex items-center justify-between gap-3 text-indigo-950 text-xs">
+            <div className="flex items-center gap-2">
+              <Store size={18} className="text-[#303d6e] shrink-0" />
+              <span>
+                <strong>সেলার মোডে অ্যাক্টিভ আছেন:</strong> {user.shopName || user.name} (আপনার দোকান ও অর্ডারের পূর্ণ বিবরণ দেখতে পারছেন)
+              </span>
+            </div>
+            <Link
+              href="/login"
+              className="text-[#303d6e] hover:underline font-bold text-xs shrink-0"
+            >
+              রোল পরিবর্তন করুন →
+            </Link>
+          </div>
+        </div>
+      ) : (!isLoggedIn || user?.role !== "admin") ? (
         <div className="max-w-7xl mx-auto px-4 sm:px-8 mt-4">
           <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-amber-900 text-xs">
             <div className="flex items-center gap-2.5">
@@ -244,7 +264,8 @@ export default function AdminPage() {
             </button>
           </div>
         </div>
-      )}
+      ) : null}
+
 
       {/* Main Admin Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-8 py-6">

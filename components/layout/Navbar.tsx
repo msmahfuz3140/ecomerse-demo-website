@@ -239,6 +239,8 @@ export default function Navbar() {
                     <div className="w-8 h-8 rounded-lg bg-[#303d6e] text-white flex items-center justify-center text-xs font-bold shadow-xs">
                       {user.role === "admin" ? (
                         <Crown size={16} className="text-amber-300" />
+                      ) : user.role === "seller" ? (
+                        <Store size={16} className="text-amber-300" />
                       ) : (
                         user.name.charAt(0).toUpperCase()
                       )}
@@ -248,11 +250,15 @@ export default function Navbar() {
                         <span className="text-xs font-bold text-slate-900 block truncate max-w-[90px]">
                           {user.name.split(" ")[0]}
                         </span>
-                        {user.role === "admin" && (
+                        {user.role === "admin" ? (
                           <span className="text-[9px] bg-amber-100 text-amber-800 font-extrabold px-1 rounded">
                             Admin
                           </span>
-                        )}
+                        ) : user.role === "seller" ? (
+                          <span className="text-[9px] bg-indigo-100 text-[#303d6e] font-extrabold px-1 rounded">
+                            Seller
+                          </span>
+                        ) : null}
                       </div>
                       <span className="text-[10px] text-slate-500 block leading-tight">
                         আমার অ্যাকাউন্ট
@@ -267,29 +273,44 @@ export default function Navbar() {
                       <div className="p-3.5 bg-slate-50 border-b border-slate-100">
                         <div className="flex items-center gap-2.5">
                           <div className="w-10 h-10 rounded-xl bg-[#303d6e] text-white flex items-center justify-center font-bold text-sm">
-                            {user.role === "admin" ? <Crown size={18} className="text-amber-400" /> : <User size={18} />}
+                            {user.role === "admin" ? (
+                              <Crown size={18} className="text-amber-400" />
+                            ) : user.role === "seller" ? (
+                              <Store size={18} className="text-amber-400" />
+                            ) : (
+                              <User size={18} />
+                            )}
                           </div>
                           <div className="min-w-0 flex-1">
                             <p className="text-xs font-black text-slate-900 truncate">{user.name}</p>
                             <p className="text-[11px] text-slate-500 truncate">{user.email || user.phone}</p>
                             <span className="inline-block text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-indigo-100 text-[#303d6e] mt-1">
-                              {user.role === "admin" ? "👑 সিস্টেম অ্যাডমিন" : "👤 কাস্টমার"}
+                              {user.role === "admin"
+                                ? "👑 সিস্টেম অ্যাডমিন"
+                                : user.role === "seller"
+                                ? "🏪 ভেন্ডর / সেলার"
+                                : "👤 কাস্টমার"}
                             </span>
                           </div>
                         </div>
                       </div>
 
                       <div className="p-2 space-y-1 text-xs font-semibold text-slate-700">
-                        {user.role === "admin" && (
+                        {(user.role === "admin" || user.role === "seller") && (
                           <Link
                             href="/admin"
                             onClick={() => setIsUserMenuOpen(false)}
                             className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-amber-50 text-amber-900 hover:bg-amber-100 transition-colors font-bold border border-amber-200/60"
                           >
-                            <Crown size={15} className="text-amber-600" />
-                            <span>অ্যাডমিন ড্যাশবোর্ড</span>
+                            {user.role === "admin" ? (
+                              <Crown size={15} className="text-amber-600" />
+                            ) : (
+                              <Store size={15} className="text-indigo-600" />
+                            )}
+                            <span>{user.role === "admin" ? "অ্যাডমিন ড্যাশবোর্ড" : "সেলার ড্যাশবোর্ড"}</span>
                           </Link>
                         )}
+
 
                         <Link
                           href="/order-track"

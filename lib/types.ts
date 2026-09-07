@@ -95,9 +95,11 @@ export interface IUser {
   name: string;
   phone: string;
   email: string;
-  role: "admin" | "customer";
+  role: "admin" | "seller" | "customer";
+  shopName?: string;
   avatar?: string;
 }
+
 
 export interface IOrder {
   _id: string;
