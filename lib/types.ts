@@ -1,0 +1,91 @@
+export interface IProductVariant {
+  id?: string;
+  colorName?: string;
+  colorHex?: string;
+  sizeName?: string;
+  price: number;
+  stock: number;
+  sku?: string;
+}
+
+export interface IWholesalePrice {
+  minQuantity: number;
+  price: number;
+}
+
+export interface IProduct {
+  _id: string;
+  name: string;
+  slug: string;
+  shortDescription?: string;
+  description: string;
+  category: { _id: string; name: string; slug: string } | string;
+  subCategory?: { _id: string; name: string; slug: string } | string;
+  vendor?: {
+    _id: string;
+    shopName: string;
+    slug: string;
+    logo?: string;
+    rating?: number;
+    isVerified?: boolean;
+  };
+  mainImage: string;
+  galleryImages?: string[];
+  basePrice: number;
+  oldPrice?: number;
+  discountPercentage?: number;
+  sku: string;
+  stock: number;
+  isHotDeal?: boolean;
+  isFeatured?: boolean;
+  isDigital?: boolean;
+  variants?: IProductVariant[];
+  wholesalePrices?: IWholesalePrice[];
+  rating: number;
+  reviewCount: number;
+  tags?: string[];
+}
+
+export interface ICategory {
+  _id: string;
+  name: string;
+  slug: string;
+  icon?: string;
+  image?: string;
+  level: number;
+  subcategories?: Array<ICategory & { children?: ICategory[] }>;
+}
+
+export interface IVendor {
+  _id: string;
+  shopName: string;
+  slug: string;
+  logo: string;
+  banner: string;
+  rating: number;
+  reviewCount: number;
+  isVerified: boolean;
+  totalProducts: number;
+  phone: string;
+  address: string;
+  description: string;
+}
+
+export interface ICartItem {
+  productId: string;
+  name: string;
+  image: string;
+  variantInfo?: string;
+  colorName?: string;
+  sizeName?: string;
+  price: number;
+  quantity: number;
+  slug: string;
+}
+
+export interface IDeliveryZone {
+  division: string;
+  district: string;
+  deliveryCharge: number;
+  estimatedDelivery?: string;
+}
