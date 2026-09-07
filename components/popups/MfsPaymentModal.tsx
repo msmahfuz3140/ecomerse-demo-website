@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ShoppingCart, Phone, MessageSquare, Sparkles, X } from "lucide-react";
+import { ShoppingCart, Phone, MessageSquare, Sparkles, X, Check } from "lucide-react";
 
 interface MfsPaymentModalProps {
   isOpen: boolean;
   gateway: "bkash" | "nagad";
   amount: number;
-  customerPhone: string;
+  customerPhone?: string;
   onClose: () => void;
   onSuccess: (paymentData: { method: string; trxId: string; senderPhone: string }) => void;
 }
@@ -16,7 +16,7 @@ export default function MfsPaymentModal({
   isOpen,
   gateway,
   amount,
-  customerPhone,
+  customerPhone = "",
   onClose,
   onSuccess,
 }: MfsPaymentModalProps) {
@@ -30,9 +30,9 @@ export default function MfsPaymentModal({
     ? "© 2026 bKash, All Rights Reserved"
     : "© 2026 Nagad, All Rights Reserved";
 
-  // Step: 1 = Account Number, 2 = OTP Verification, 3 = PIN, 4 = Processing
+  // Step: 1 = Account Number, 2 = OTP Verification, 3 = PIN, 4 = Processing/Success
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
-  const [phone, setPhone] = useState(customerPhone || "01712345678");
+  const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
   const [generatedOtp, setGeneratedOtp] = useState("482910");
   const [pin, setPin] = useState("");
@@ -41,29 +41,26 @@ export default function MfsPaymentModal({
   const [showSmsBanner, setShowSmsBanner] = useState(false);
   const [invNo, setInvNo] = useState("InvnsTTpwC6Gm");
 
-  useEffect(() => {
-    if (customerPhone) {
-      setPhone(customerPhone);
-    }
-  }, [customerPhone]);
-
+  // Reset modal state whenever it opens
   useEffect(() => {
     if (isOpen) {
       setStep(1);
+      setPhone(customerPhone || "");
       setOtp("");
       setPin("");
       setErrorMsg("");
       setShowSmsBanner(false);
       setCountdown(30);
-      // Generate a realistic invoice ID like in the screenshot
-      const randomChars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789";
+
+      // Generate realistic invoice number like in screenshot
+      const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789";
       let res = "Invns";
       for (let i = 0; i < 7; i++) {
-        res += randomChars.charAt(Math.floor(Math.random() * randomChars.length));
+        res += chars.charAt(Math.floor(Math.random() * chars.length));
       }
       setInvNo(res);
     }
-  }, [isOpen]);
+  }, [isOpen, customerPhone]);
 
   // Resend OTP countdown timer
   useEffect(() => {
@@ -86,11 +83,15 @@ export default function MfsPaymentModal({
   };
 
   // Step 1: Submit Phone Number
-  const handleProceedToOtp = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleProceedToOtp = () => {
     setErrorMsg("");
-
     const cleanPhone = phone.replace(/\s+/g, "");
+
+    if (!cleanPhone) {
+      setErrorMsg(`আপনার ${brandName} একাউন্ট নম্বর লিখুন`);
+      return;
+    }
+
     if (!/^01[3-9]\d{8}$/.test(cleanPhone)) {
       setErrorMsg("সঠিক ১১ ডিজিটের মোবাইল নম্বর দিন (যেমন: 017XXXXXXXX)");
       return;
@@ -103,30 +104,25 @@ export default function MfsPaymentModal({
 
     setTimeout(() => {
       setShowSmsBanner(true);
-    }, 500);
+    }, 400);
   };
 
   // Step 2: Submit OTP
-  const handleConfirmOtp = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleConfirmOtp = () => {
     setErrorMsg("");
-
     if (otp.trim().length !== 6) {
-      setErrorMsg("অনুগ্রহ করে ৬ ডিজিটের ভেরিফিকেশন কোড দিন।");
+      setErrorMsg("অনুগ্রহ করে মোবাইলে পাঠানো ৬ ডিজিটের কোড দিন।");
       return;
     }
-
     setStep(3);
     setShowSmsBanner(false);
   };
 
-  // Step 3: Submit PIN & Complete Payment
-  const handleConfirmPin = (e: React.FormEvent) => {
-    e.preventDefault();
+  // Step 3: Submit PIN and Complete Payment
+  const handleConfirmPin = () => {
     setErrorMsg("");
-
     if (pin.trim().length < 4) {
-      setErrorMsg("অনুগ্রহ করে আপনার সঠিক পিন (PIN) নম্বর দিন।");
+      setErrorMsg("অনুগ্রহ করে আপনার পিন (PIN) নম্বর দিন।");
       return;
     }
 
@@ -137,9 +133,20 @@ export default function MfsPaymentModal({
       onSuccess({
         method: isBkash ? "bkash_auto" : "nagad_auto",
         trxId,
-        senderPhone: phone,
+        senderPhone: phone || "017XXXXXXXX",
       });
-    }, 1800);
+    }, 1500);
+  };
+
+  // Central Confirm Handler
+  const handleConfirm = (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    if (step === 1) handleProceedToOtp();
+    else if (step === 2) handleConfirmOtp();
+    else if (step === 3) handleConfirmPin();
   };
 
   const handleResendOtp = () => {
@@ -150,8 +157,8 @@ export default function MfsPaymentModal({
     setShowSmsBanner(true);
   };
 
-  // Determine if confirm button should be enabled
-  const isConfirmEnabled = () => {
+  // Validation state for Confirm button
+  const canConfirm = () => {
     if (step === 1) return phone.replace(/\s+/g, "").length >= 11;
     if (step === 2) return otp.trim().length === 6;
     if (step === 3) return pin.trim().length >= 4;
@@ -159,10 +166,15 @@ export default function MfsPaymentModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#707786]/90 backdrop-blur-xs flex items-center justify-center p-4 animate-fadeIn">
-      {/* Simulated Incoming SMS Toast */}
+    <div
+      className="fixed inset-0 z-100 bg-[#707786]/90 backdrop-blur-xs flex items-center justify-center p-4 animate-fadeIn"
+      onClick={(e) => {
+        if (e.target === e.currentTarget && step !== 4) onClose();
+      }}
+    >
+      {/* Simulated Incoming SMS Toast Banner */}
       {showSmsBanner && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-60 max-w-sm w-full mx-auto bg-slate-900 text-white rounded-2xl p-3.5 shadow-2xl border border-slate-700 flex items-start gap-3 animate-slide-down">
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-110 max-w-sm w-full mx-auto bg-slate-900 text-white rounded-2xl p-3.5 shadow-2xl border border-slate-700 flex items-start gap-3 animate-slide-down">
           <div className="w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0">
             <MessageSquare size={16} />
           </div>
@@ -197,7 +209,10 @@ export default function MfsPaymentModal({
       )}
 
       {/* Main Payment Gateway Modal Card - 1:1 Match with official bKash / Nagad Screen */}
-      <div className="w-full max-w-[430px] bg-white rounded-lg shadow-2xl overflow-hidden border border-slate-200 animate-scaleUp">
+      <div
+        className="w-full max-w-[430px] bg-white rounded-lg shadow-2xl overflow-hidden border border-slate-200 animate-scaleUp"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* 1. Header Logo Strip (Pure White with Centered Brand Logo) */}
         <div className="bg-white px-6 py-5 border-b border-slate-100 flex items-center justify-center relative">
           {isBkash ? (
@@ -283,7 +298,7 @@ export default function MfsPaymentModal({
 
           {/* STEP 1: Phone / Account Number */}
           {step === 1 && (
-            <form onSubmit={handleProceedToOtp} id="mfs-step-1" className="space-y-4">
+            <div className="space-y-4">
               <h3 className="text-base font-bold text-white tracking-wide">
                 Your {brandName} Account Number
               </h3>
@@ -291,11 +306,19 @@ export default function MfsPaymentModal({
               <div className="max-w-[340px] mx-auto">
                 <input
                   type="tel"
-                  required
                   autoFocus
                   placeholder="e.g 01XXXXXXXXX"
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
+                  onChange={(e) => {
+                    setPhone(e.target.value);
+                    if (errorMsg) setErrorMsg("");
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleProceedToOtp();
+                    }
+                  }}
                   className="w-full bg-white text-slate-900 text-center py-3 px-4 rounded shadow-inner text-base font-bold font-mono tracking-wider placeholder:text-slate-400 placeholder:font-normal focus:outline-none focus:ring-3 focus:ring-white/40 transition-all"
                 />
               </div>
@@ -310,12 +333,12 @@ export default function MfsPaymentModal({
                   terms & conditions
                 </a>
               </div>
-            </form>
+            </div>
           )}
 
           {/* STEP 2: Verification Code (OTP) */}
           {step === 2 && (
-            <form onSubmit={handleConfirmOtp} id="mfs-step-2" className="space-y-4">
+            <div className="space-y-4">
               <h3 className="text-base font-bold text-white tracking-wide">
                 {brandName} Verification Code
               </h3>
@@ -323,12 +346,20 @@ export default function MfsPaymentModal({
               <div className="max-w-[340px] mx-auto">
                 <input
                   type="text"
-                  required
                   autoFocus
                   maxLength={6}
                   placeholder="e.g 123456"
                   value={otp}
-                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
+                  onChange={(e) => {
+                    setOtp(e.target.value.replace(/\D/g, ""));
+                    if (errorMsg) setErrorMsg("");
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleConfirmOtp();
+                    }
+                  }}
                   className="w-full bg-white text-slate-900 text-center py-3 px-4 rounded shadow-inner text-lg font-black font-mono tracking-[0.3em] placeholder:tracking-normal placeholder:text-slate-400 placeholder:font-normal focus:outline-none focus:ring-3 focus:ring-white/40 transition-all"
                 />
               </div>
@@ -345,18 +376,21 @@ export default function MfsPaymentModal({
 
                 <button
                   type="button"
-                  onClick={() => setOtp(generatedOtp)}
+                  onClick={() => {
+                    setOtp(generatedOtp);
+                    if (errorMsg) setErrorMsg("");
+                  }}
                   className="bg-white/20 hover:bg-white/30 text-white px-2.5 py-1 rounded text-[11px] font-bold cursor-pointer transition-colors"
                 >
                   Auto Fill OTP ({generatedOtp})
                 </button>
               </div>
-            </form>
+            </div>
           )}
 
           {/* STEP 3: PIN Number Entry */}
           {step === 3 && (
-            <form onSubmit={handleConfirmPin} id="mfs-step-3" className="space-y-4">
+            <div className="space-y-4">
               <h3 className="text-base font-bold text-white tracking-wide">
                 Enter {isBkash ? "5" : "4"} digit PIN
               </h3>
@@ -364,12 +398,20 @@ export default function MfsPaymentModal({
               <div className="max-w-[340px] mx-auto">
                 <input
                   type="password"
-                  required
                   autoFocus
                   maxLength={isBkash ? 5 : 4}
                   placeholder="•••••"
                   value={pin}
-                  onChange={(e) => setPin(e.target.value)}
+                  onChange={(e) => {
+                    setPin(e.target.value);
+                    if (errorMsg) setErrorMsg("");
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleConfirmPin();
+                    }
+                  }}
                   className="w-full bg-white text-slate-900 text-center py-3 px-4 rounded shadow-inner text-xl font-black font-mono tracking-[0.4em] placeholder:tracking-normal placeholder:text-slate-400 focus:outline-none focus:ring-3 focus:ring-white/40 transition-all"
                 />
               </div>
@@ -378,13 +420,16 @@ export default function MfsPaymentModal({
                 <span className="text-[11px] text-white/80">Demo PIN: 12345</span>
                 <button
                   type="button"
-                  onClick={() => setPin(isBkash ? "12345" : "1234")}
+                  onClick={() => {
+                    setPin(isBkash ? "12345" : "1234");
+                    if (errorMsg) setErrorMsg("");
+                  }}
                   className="bg-white/20 hover:bg-white/30 text-white px-2.5 py-1 rounded text-[11px] font-bold cursor-pointer transition-colors"
                 >
                   Use Demo PIN
                 </button>
               </div>
-            </form>
+            </div>
           )}
 
           {/* STEP 4: Processing / Loading Animation */}
@@ -395,7 +440,7 @@ export default function MfsPaymentModal({
                 Processing {brandName} Payment...
               </h3>
               <p className="text-xs text-white/80 font-medium">
-                অনুগ্রহ করে পেজটি বন্ধ করবেন না, পেমেন্ট সম্পন্ন হচ্ছে...
+                অনুগ্রহ করে অপেক্ষা করুন, পেমেন্ট ভেরিফাই করা হচ্ছে...
               </p>
             </div>
           )}
@@ -414,23 +459,17 @@ export default function MfsPaymentModal({
                 Cancel
               </button>
 
-              {/* Confirm Button */}
+              {/* Confirm Button - Direct click handler */}
               <button
-                type="submit"
-                form={
-                  step === 1
-                    ? "mfs-step-1"
-                    : step === 2
-                    ? "mfs-step-2"
-                    : "mfs-step-3"
-                }
-                disabled={!isConfirmEnabled()}
+                type="button"
+                onClick={handleConfirm}
+                disabled={!canConfirm()}
                 style={{
-                  backgroundColor: isConfirmEnabled() ? brandColor : "#E2E8F0",
-                  color: isConfirmEnabled() ? "#FFFFFF" : "#94A3B8",
+                  backgroundColor: canConfirm() ? brandColor : "#E2E8F0",
+                  color: canConfirm() ? "#FFFFFF" : "#94A3B8",
                 }}
                 className={`w-1/2 py-2.5 px-4 font-bold rounded text-sm transition-all text-center ${
-                  isConfirmEnabled()
+                  canConfirm()
                     ? "hover:opacity-95 shadow-md cursor-pointer active:scale-98"
                     : "cursor-not-allowed"
                 }`}
