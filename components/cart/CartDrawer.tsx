@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { X, Trash2, ArrowRight, ShoppingBag } from "lucide-react";
 import { useCartStore } from "@/lib/store";
+import ProductImage from "@/components/product/ProductImage";
 
 export default function CartDrawer() {
   const {
@@ -27,7 +28,7 @@ export default function CartDrawer() {
       />
 
       {/* Drawer */}
-      <div className="fixed inset-y-0 right-0 max-w-full flex pl-10">
+      <div className="fixed inset-y-0 right-0 max-w-full flex pl-0 sm:pl-10">
         <div className="w-screen max-w-md bg-white shadow-2xl flex flex-col animate-slide-left border-l border-slate-100">
           {/* Header */}
           <div className="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/70">
@@ -68,11 +69,15 @@ export default function CartDrawer() {
                   key={`${item.productId}-${item.variantInfo || ""}`}
                   className="flex gap-3.5 p-3 rounded-2xl bg-slate-50 border border-slate-100/80 items-center"
                 >
-                  <img
-                    src={item.image}
-                    alt={item.name}
-                    className="w-16 h-16 rounded-xl object-cover border border-slate-200 shrink-0"
-                  />
+                  <div className="w-16 h-16 rounded-xl overflow-hidden border border-slate-200 shrink-0 bg-white">
+                    <ProductImage
+                      src={item.image}
+                      alt={item.name}
+                      className="w-full h-full object-cover"
+                      showText={false}
+                      iconSize={18}
+                    />
+                  </div>
                   <div className="flex-1 min-w-0">
                     <h4 className="text-xs font-bold text-slate-800 line-clamp-1">
                       {item.name}

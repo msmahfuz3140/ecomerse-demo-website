@@ -19,10 +19,13 @@ import {
   ShieldCheck,
   Flame,
   ArrowRight,
+  X,
+  Layers,
 } from "lucide-react";
 import { useCartStore, useAuthStore } from "@/lib/store";
 import { api } from "@/lib/api";
 import { ICategory, IProduct } from "@/lib/types";
+import ProductImage from "@/components/product/ProductImage";
 
 export default function Navbar() {
   const router = useRouter();
@@ -38,6 +41,7 @@ export default function Navbar() {
   const [isSearching, setIsSearching] = useState(false);
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
 
   const userMenuRef = useRef<HTMLDivElement>(null);
 
@@ -87,25 +91,25 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-40 bg-white shadow-xs border-b border-slate-200">
       {/* Top Corporate Micro Bar */}
-      <div className="bg-[#1e293b] text-slate-300 text-[11px] py-1.5 px-4 border-b border-slate-800">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-4 sm:gap-6">
+      <div className="bg-[#1e293b] text-slate-300 text-[11px] py-1.5 px-3 sm:px-4 border-b border-slate-800">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 sm:gap-6 min-w-0">
             <a
               href="tel:01849832178"
-              className="flex items-center gap-1.5 hover:text-white transition-colors"
+              className="flex items-center gap-1 sm:gap-1.5 hover:text-white transition-colors truncate"
             >
-              <PhoneCall size={12} className="text-emerald-400" />
-              <span>
+              <PhoneCall size={12} className="text-emerald-400 shrink-0" />
+              <span className="truncate">
                 হটলাইন: <strong className="text-white">01849-832178</strong>
               </span>
             </a>
             <span className="hidden md:inline-flex items-center gap-1 text-slate-400">
-              <Truck size={12} className="text-amber-400" />
+              <Truck size={12} className="text-amber-400 shrink-0" />
               <span>সারাদেশে ৬৪ জেলায় দ্রুত হোম ডেলিভারি</span>
             </span>
           </div>
 
-          <div className="flex items-center gap-4 sm:gap-5">
+          <div className="flex items-center gap-2 sm:gap-5 shrink-0">
             <span className="hidden sm:inline-flex items-center gap-1 text-emerald-400 font-semibold">
               <ShieldCheck size={13} />
               <span>১০০% অথেনটিক প্রোডাক্ট গ্যারান্টি</span>
@@ -114,37 +118,47 @@ export default function Navbar() {
             {/* Quick Admin Direct Shortcut */}
             <Link
               href="/admin"
-              className="inline-flex items-center gap-1 text-amber-400 hover:text-amber-300 font-bold px-2 py-0.5 rounded bg-amber-400/10 hover:bg-amber-400/20 transition-colors border border-amber-400/20"
+              className="inline-flex items-center gap-1 text-amber-400 hover:text-amber-300 font-bold px-2 py-0.5 rounded bg-amber-400/10 hover:bg-amber-400/20 transition-colors border border-amber-400/20 text-[10px] sm:text-[11px]"
             >
               <Crown size={12} />
-              <span>অ্যাডমিন ড্যাশবোর্ড</span>
+              <span>অ্যাডমিন</span>
             </Link>
           </div>
         </div>
       </div>
 
       {/* Main Header Bar */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-3.5">
-        <div className="flex items-center justify-between gap-3 sm:gap-6">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#303d6e] to-indigo-600 flex items-center justify-center text-white font-extrabold text-xl shadow-md group-hover:scale-105 transition-transform">
-              SG
-            </div>
-            <div>
-              <div className="flex items-center gap-1">
-                <span className="font-black text-xl sm:text-2xl text-slate-900 tracking-tight block leading-none">
-                  Shop<span className="text-[#303d6e]">Genie</span>
-                </span>
-                <span className="text-[10px] font-bold bg-indigo-50 text-[#303d6e] px-1.5 py-0.5 rounded border border-indigo-100">
-                  PRO
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2.5 sm:py-3.5">
+        <div className="flex items-center justify-between gap-2 sm:gap-6">
+          {/* Mobile Menu Button + Logo */}
+          <div className="flex items-center gap-1 sm:gap-2.5 shrink-0">
+            <button
+              onClick={() => setIsMobileDrawerOpen(true)}
+              className="md:hidden p-1.5 rounded-xl text-slate-700 hover:bg-slate-100 hover:text-[#303d6e] transition-colors cursor-pointer"
+              aria-label="Open Navigation Drawer"
+            >
+              <Menu size={22} />
+            </button>
+
+            <Link href="/" className="flex items-center gap-2 sm:gap-2.5 group">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-[#303d6e] to-indigo-600 flex items-center justify-center text-white font-extrabold text-lg sm:text-xl shadow-md group-hover:scale-105 transition-transform shrink-0">
+                SG
+              </div>
+              <div>
+                <div className="flex items-center gap-1">
+                  <span className="font-black text-lg sm:text-2xl text-slate-900 tracking-tight block leading-none">
+                    Shop<span className="text-[#303d6e]">Genie</span>
+                  </span>
+                  <span className="text-[9px] sm:text-[10px] font-bold bg-indigo-50 text-[#303d6e] px-1 sm:px-1.5 py-0.5 rounded border border-indigo-100">
+                    PRO
+                  </span>
+                </div>
+                <span className="text-[9px] sm:text-[10px] font-medium text-slate-500 uppercase tracking-widest block mt-0.5 hidden sm:block">
+                  Modern E-Commerce BD
                 </span>
               </div>
-              <span className="text-[10px] font-medium text-slate-500 uppercase tracking-widest block mt-0.5">
-                Modern E-Commerce BD
-              </span>
-            </div>
-          </Link>
+            </Link>
+          </div>
 
           {/* Search Box with Autocomplete */}
           <div className="flex-1 max-w-2xl relative hidden sm:block">
@@ -179,11 +193,15 @@ export default function Navbar() {
                     onClick={() => setSearchResults([])}
                     className="flex items-center gap-3 p-3 hover:bg-indigo-50/50 transition-colors border-b border-slate-50 last:border-none"
                   >
-                    <img
-                      src={item.mainImage}
-                      alt={item.name}
-                      className="w-11 h-11 rounded-lg object-cover border border-slate-100 shrink-0"
-                    />
+                    <div className="w-11 h-11 rounded-lg overflow-hidden border border-slate-100 shrink-0 bg-white">
+                      <ProductImage
+                        src={item.mainImage}
+                        alt={item.name}
+                        className="w-full h-full object-cover"
+                        showText={false}
+                        iconSize={14}
+                      />
+                    </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-slate-800 truncate">{item.name}</p>
                       <div className="flex items-center gap-2 mt-0.5">
@@ -467,6 +485,163 @@ export default function Navbar() {
           </Link>
         </div>
       </div>
+
+      {/* Slide-in Mobile Drawer */}
+      {isMobileDrawerOpen && (
+        <div className="fixed inset-0 z-50 md:hidden animate-fade-in">
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity"
+            onClick={() => setIsMobileDrawerOpen(false)}
+          />
+
+          {/* Drawer Menu Content */}
+          <div className="fixed inset-y-0 left-0 w-4/5 max-w-xs bg-white shadow-2xl flex flex-col z-10 animate-slide-left [transform:translateX(0)]">
+            {/* Header */}
+            <div className="p-4 bg-gradient-to-r from-[#1e293b] to-[#303d6e] text-white flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center font-black text-sm">
+                  SG
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-sm text-white leading-tight">ShopGenie PRO</h3>
+                  <p className="text-[10px] text-slate-300">মেন্যু ও ক্যাটাগরি</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsMobileDrawerOpen(false)}
+                className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors cursor-pointer"
+                aria-label="Close Drawer"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* User Quick Info */}
+            <div className="p-3 bg-slate-50 border-b border-slate-100">
+              {isLoggedIn && user ? (
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <div className="w-8 h-8 rounded-full bg-[#303d6e] text-white font-bold text-xs flex items-center justify-center shrink-0">
+                      {user.name.charAt(0).toUpperCase()}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-xs font-bold text-slate-800 truncate">{user.name}</p>
+                      <p className="text-[10px] text-slate-500 truncate">{user.phone || user.email}</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={handleLogout}
+                    className="text-red-600 text-xs font-bold p-1 hover:bg-red-50 rounded cursor-pointer"
+                    title="Logout"
+                  >
+                    <LogOut size={16} />
+                  </button>
+                </div>
+              ) : (
+                <Link
+                  href="/login"
+                  onClick={() => setIsMobileDrawerOpen(false)}
+                  className="flex items-center justify-center gap-2 bg-[#303d6e] hover:bg-indigo-900 text-white text-xs font-bold py-2 rounded-xl shadow-xs transition-colors"
+                >
+                  <User size={14} />
+                  <span>লগইন / রেজিস্টার করুন</span>
+                </Link>
+              )}
+            </div>
+
+            {/* Scrollable Navigation Items */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-4 text-xs font-semibold">
+              {/* Quick Links */}
+              <div>
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-2">
+                  কুইক লিঙ্কস
+                </span>
+                <div className="space-y-1">
+                  <Link
+                    href="/#hot-deals"
+                    onClick={() => setIsMobileDrawerOpen(false)}
+                    className="flex items-center justify-between px-3 py-2.5 rounded-xl bg-rose-50 text-rose-700 font-bold hover:bg-rose-100 transition-colors"
+                  >
+                    <span className="flex items-center gap-2">
+                      <Flame size={16} className="text-rose-600" />
+                      <span>হট ডিল অফার</span>
+                    </span>
+                    <span className="text-[10px] bg-rose-600 text-white px-1.5 py-0.5 rounded-full">HOT</span>
+                  </Link>
+                  <Link
+                    href="/sellers"
+                    onClick={() => setIsMobileDrawerOpen(false)}
+                    className="flex items-center gap-2 px-3 py-2 rounded-xl text-slate-700 hover:bg-slate-50 hover:text-[#303d6e] transition-colors"
+                  >
+                    <Store size={16} className="text-slate-500" />
+                    <span>ভেরিফাইড শপসমূহ</span>
+                  </Link>
+                  <Link
+                    href="/order-track"
+                    onClick={() => setIsMobileDrawerOpen(false)}
+                    className="flex items-center gap-2 px-3 py-2 rounded-xl text-slate-700 hover:bg-slate-50 hover:text-[#303d6e] transition-colors"
+                  >
+                    <Truck size={16} className="text-slate-500" />
+                    <span>অর্ডার ট্র্যাকিং</span>
+                  </Link>
+                  <Link
+                    href="/admin"
+                    onClick={() => setIsMobileDrawerOpen(false)}
+                    className="flex items-center gap-2 px-3 py-2 rounded-xl bg-amber-50 text-amber-900 font-bold hover:bg-amber-100 transition-colors"
+                  >
+                    <Crown size={16} className="text-amber-600" />
+                    <span>অ্যাডমিন ড্যাশবোর্ড</span>
+                  </Link>
+                </div>
+              </div>
+
+              {/* All Categories */}
+              <div>
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-2">
+                  সকল ক্যাটাগরি ({categories.length})
+                </span>
+                <div className="space-y-1">
+                  <Link
+                    href="/category/all"
+                    onClick={() => setIsMobileDrawerOpen(false)}
+                    className="flex items-center justify-between px-3 py-2 rounded-xl text-slate-800 hover:bg-indigo-50 hover:text-[#303d6e] transition-colors font-bold"
+                  >
+                    <span className="flex items-center gap-2">
+                      <Layers size={15} className="text-[#303d6e]" />
+                      <span>সব প্রডাক্ট একসাথে</span>
+                    </span>
+                    <ArrowRight size={13} className="text-slate-400" />
+                  </Link>
+
+                  {categories.map((cat) => (
+                    <Link
+                      key={cat._id}
+                      href={`/category/${cat.slug}`}
+                      onClick={() => setIsMobileDrawerOpen(false)}
+                      className="flex items-center justify-between px-3 py-2 rounded-xl text-slate-700 hover:bg-indigo-50 hover:text-[#303d6e] transition-colors"
+                    >
+                      <span>{cat.name}</span>
+                      <span className="text-slate-400">›</span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom Hotline Action in Drawer */}
+            <div className="p-3 border-t border-slate-100 bg-slate-50">
+              <a
+                href="tel:01849832178"
+                className="flex items-center justify-center gap-2 text-xs font-bold text-emerald-700 bg-emerald-100 hover:bg-emerald-200 py-2.5 px-3 rounded-xl transition-colors"
+              >
+                <PhoneCall size={14} />
+                <span>হটলাইন: 01849-832178</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 }

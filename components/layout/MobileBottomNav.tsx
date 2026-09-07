@@ -12,7 +12,7 @@ export default function MobileBottomNav() {
   const { user, isLoggedIn } = useAuthStore();
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-slate-200 shadow-2xl px-2 py-2 flex items-center justify-around">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-slate-200/80 shadow-2xl px-2 py-2 flex items-center justify-around">
       {/* Categories */}
       <Link
         href="/category/all"
@@ -63,8 +63,8 @@ export default function MobileBottomNav() {
         <span>কার্ট</span>
       </button>
 
-      {/* Account / Admin */}
-      {isLoggedIn && user?.role === "admin" ? (
+      {/* Account / Admin / Seller */}
+      {isLoggedIn && (user?.role === "admin" || user?.role === "seller") ? (
         <Link
           href="/admin"
           className={`flex flex-col items-center gap-1 text-[11px] font-bold transition-colors ${
@@ -72,7 +72,7 @@ export default function MobileBottomNav() {
           }`}
         >
           <Crown size={19} className="text-amber-500" />
-          <span>অ্যাডমিন</span>
+          <span>{user?.role === "admin" ? "অ্যাডমিন" : "সেলার"}</span>
         </Link>
       ) : (
         <Link

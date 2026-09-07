@@ -32,6 +32,7 @@ import {
 import { useAuthStore } from "@/lib/store";
 import { api, fallbackProducts } from "@/lib/api";
 import { IOrder, IIncompleteOrder, IProduct } from "@/lib/types";
+import ProductImage from "@/components/product/ProductImage";
 
 export default function AdminPage() {
   const router = useRouter();
@@ -803,11 +804,15 @@ export default function AdminPage() {
                     <tr key={p._id} className="hover:bg-slate-50/60">
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-3">
-                          <img
-                            src={p.mainImage}
-                            alt={p.name}
-                            className="w-10 h-10 rounded-lg object-cover border border-slate-100 shrink-0"
-                          />
+                          <div className="w-10 h-10 rounded-lg overflow-hidden border border-slate-100 shrink-0 bg-white">
+                            <ProductImage
+                              src={p.mainImage}
+                              alt={p.name}
+                              className="w-full h-full object-cover"
+                              showText={false}
+                              iconSize={14}
+                            />
+                          </div>
                           <div className="min-w-0 max-w-sm">
                             <span className="font-bold text-slate-900 truncate block">{p.name}</span>
                             <span className="text-[10px] text-slate-400 font-mono">SKU: {p.sku}</span>

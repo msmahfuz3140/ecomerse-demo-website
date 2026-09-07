@@ -779,7 +779,7 @@ export const api = {
       }
       if (params?.search) {
         const q = params.search.toLowerCase();
-        filtered = filtered.filter((p) => p.name.toLowerCase().includes(q) || p.tags.some((t) => t.includes(q)));
+        filtered = filtered.filter((p) => p.name.toLowerCase().includes(q) || Boolean(p.tags?.some((t) => t.includes(q))));
       }
       if (params?.isHotDeal) {
         filtered = filtered.filter((p) => p.isHotDeal);

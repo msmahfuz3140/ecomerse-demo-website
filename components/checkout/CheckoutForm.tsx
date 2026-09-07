@@ -17,6 +17,7 @@ import { useCartStore } from "@/lib/store";
 import { api } from "@/lib/api";
 import { IDeliveryZone } from "@/lib/types";
 import MfsPaymentModal from "@/components/popups/MfsPaymentModal";
+import ProductImage from "@/components/product/ProductImage";
 
 export default function CheckoutForm() {
   const router = useRouter();
@@ -710,11 +711,15 @@ export default function CheckoutForm() {
                   className="flex items-center justify-between text-xs gap-3 py-1.5"
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-10 h-10 rounded-lg object-cover border border-slate-100 shrink-0"
-                    />
+                    <div className="w-10 h-10 rounded-lg overflow-hidden border border-slate-100 shrink-0 bg-white">
+                      <ProductImage
+                        src={item.image}
+                        alt={item.name}
+                        className="w-full h-full object-cover"
+                        showText={false}
+                        iconSize={14}
+                      />
+                    </div>
                     <div className="min-w-0">
                       <p className="font-bold text-slate-800 truncate">{item.name}</p>
                       <p className="text-slate-400 font-medium">

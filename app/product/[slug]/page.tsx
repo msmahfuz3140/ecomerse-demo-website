@@ -17,6 +17,7 @@ import { api } from "@/lib/api";
 import { useCartStore } from "@/lib/store";
 import { IProduct } from "@/lib/types";
 import ProductCard from "@/components/product/ProductCard";
+import ProductImage from "@/components/product/ProductImage";
 
 export default function ProductDetailPage({
   params,
@@ -109,10 +110,12 @@ export default function ProductDetailPage({
         {/* Left: Product Images Gallery */}
         <div className="lg:col-span-6 space-y-4">
           <div className="rounded-3xl overflow-hidden bg-white border border-slate-100 shadow-md aspect-square flex items-center justify-center p-2">
-            <img
+            <ProductImage
               src={selectedImage || product.mainImage}
               alt={product.name}
               className="w-full h-full object-cover rounded-2xl"
+              showText={true}
+              iconSize={40}
             />
           </div>
 
@@ -127,7 +130,13 @@ export default function ProductDetailPage({
                     selectedImage === img ? "border-[#303d6e] shadow-md" : "border-slate-200 hover:border-slate-300"
                   }`}
                 >
-                  <img src={img} alt="" className="w-full h-full object-cover" />
+                  <ProductImage
+                    src={img}
+                    alt=""
+                    className="w-full h-full object-cover"
+                    showText={false}
+                    iconSize={16}
+                  />
                 </button>
               ))}
             </div>

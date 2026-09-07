@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { X, Check, Star, ShoppingCart, ArrowRight } from "lucide-react";
 import { useQuickViewStore, useCartStore } from "@/lib/store";
+import ProductImage from "@/components/product/ProductImage";
 
 export default function QuickViewModal() {
   const router = useRouter();
@@ -59,11 +60,13 @@ export default function QuickViewModal() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 items-start">
           {/* Image */}
-          <div className="rounded-2xl overflow-hidden bg-slate-50 border border-slate-100 shadow-sm">
-            <img
+          <div className="rounded-2xl overflow-hidden bg-slate-50 border border-slate-100 shadow-sm aspect-square sm:aspect-auto">
+            <ProductImage
               src={product.mainImage}
               alt={product.name}
               className="w-full h-64 sm:h-80 object-cover"
+              showText={true}
+              iconSize={32}
             />
           </div>
 
