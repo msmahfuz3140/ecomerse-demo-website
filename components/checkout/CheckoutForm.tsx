@@ -749,13 +749,25 @@ export default function CheckoutForm() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full mt-6 bg-[#303d6e] hover:bg-indigo-900 text-white font-black py-4 px-6 rounded-2xl text-base flex items-center justify-center gap-2 shadow-xl shadow-indigo-950/20 transition-all hover:scale-[1.01] active:scale-98 disabled:opacity-50"
+              className={`w-full mt-6 text-white font-black py-4 px-6 rounded-2xl text-base flex items-center justify-center gap-2 shadow-xl transition-all hover:scale-[1.01] active:scale-98 disabled:opacity-50 ${
+                paymentMethod === "bkash_auto"
+                  ? "bg-[#E2136E] hover:bg-[#c90f60] shadow-pink-900/20"
+                  : paymentMethod === "nagad_auto"
+                  ? "bg-[#F7941D] hover:bg-orange-600 shadow-orange-900/20"
+                  : "bg-[#303d6e] hover:bg-indigo-900 shadow-indigo-950/20"
+              }`}
             >
               {isSubmitting ? (
                 <span>প্রসেসিং হচ্ছে...</span>
               ) : (
                 <>
-                  <span>অর্ডার নিশ্চিত করুন</span>
+                  <span>
+                    {paymentMethod === "bkash_auto"
+                      ? "বিকাশ দিয়ে সরাসরি পে করুন (Pay with bKash)"
+                      : paymentMethod === "nagad_auto"
+                      ? "নগদ দিয়ে সরাসরি পে করুন (Pay with Nagad)"
+                      : "অর্ডার নিশ্চিত করুন"}
+                  </span>
                   <ArrowRight size={18} />
                 </>
               )}
