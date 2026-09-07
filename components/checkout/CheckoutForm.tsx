@@ -16,11 +16,17 @@ import {
 import { useCartStore } from "@/lib/store";
 import { api } from "@/lib/api";
 import { IDeliveryZone } from "@/lib/types";
+import MfsPaymentModal from "@/components/popups/MfsPaymentModal";
 
 export default function CheckoutForm() {
   const router = useRouter();
   const { items, getSubtotal, clearCart } = useCartStore();
   const subtotal = getSubtotal();
+
+  // MFS Payment Gateway Modal State
+  const [isMfsModalOpen, setIsMfsModalOpen] = useState(false);
+  const [mfsGateway, setMfsGateway] = useState<"bkash" | "nagad">("bkash");
+
 
   // Form State
   const [name, setName] = useState("");
@@ -113,29 +119,14 @@ export default function CheckoutForm() {
 
   const grandTotal = Math.max(0, subtotal + deliveryCharge - discountAmount);
 
-  // Submit Order
-  const handleSubmitOrder = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setErrorMessage("");
-
-    if (items.length === 0) {
-      setErrorMessage("আপনার কার্টে কোনো পণ্য নেই। অনুগ্রহ করে পণ্য যোগ করুন।");
-      return;
-    }
-
-    if (!/^01[3-9]\d{8}$/.test(phone.replace(/\s+/g, ""))) {
-      setErrorMessage("অনুগ্রহ করে সঠিক ১১ ডিজিটের মোবাইল নম্বর দিন (যেমন: 017xxxxxxxx)");
-      return;
-    }
-
-    if (["bkash_manual", "nagad_manual", "rocket_manual"].includes(paymentMethod)) {
-      if (!manualTrxId.trim() || manualTrxId.trim().length < 5) {
-        setErrorMessage("ম্যানুয়াল পেমেন্টের ট্রানজেকশন আইডি (TrxID) আবশ্যক।");
-        return;
-      }
-    }
-
+  // Core Order Finalizer (Called directly or after MFS Gateway verification)
+  const finalizeOrder = async (mfsPaymentData?: {
+    method: string;
+    trxId: string;
+    senderPhone: string;
+  }) => {
     setIsSubmitting(true);
+    setErrorMessage("");
 
     try {
       const orderData = {
@@ -158,9 +149,9 @@ export default function CheckoutForm() {
         deliveryCharge,
         discount: discountAmount,
         grandTotal,
-        paymentMethod,
-        manualTrxId,
-        manualSenderNumber,
+        paymentMethod: mfsPaymentData?.method || paymentMethod,
+        manualTrxId: mfsPaymentData?.trxId || manualTrxId,
+        manualSenderNumber: mfsPaymentData?.senderPhone || manualSenderNumber,
         couponCode: appliedCoupon || "",
       };
 
@@ -169,13 +160,9 @@ export default function CheckoutForm() {
       if (result.success) {
         clearCart();
         const invoiceId = result.data?.order?.invoiceId || "SG-ORDER";
-
-        // If automated payment requires redirect
-        if (result.data?.paymentResult?.redirectUrl) {
-          router.push(result.data.paymentResult.redirectUrl);
-        } else {
-          router.push(`/order-success?invoiceId=${invoiceId}&phone=${phone}`);
-        }
+        const isPaid = mfsPaymentData ? "paid" : "pending";
+        const trxQuery = mfsPaymentData?.trxId ? `&trxId=${mfsPaymentData.trxId}` : "";
+        router.push(`/order-success?invoiceId=${invoiceId}&phone=${phone}&paymentStatus=${isPaid}${trxQuery}`);
       } else {
         setErrorMessage(result.message || "অর্ডার সম্পন্ন হতে সমস্যা হয়েছে। আবার চেষ্টা করুন।");
       }
@@ -185,6 +172,53 @@ export default function CheckoutForm() {
       setIsSubmitting(false);
     }
   };
+
+  // Submit Order Form Trigger
+  const handleSubmitOrder = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrorMessage("");
+
+    if (items.length === 0) {
+      setErrorMessage("আপনার কার্টে কোনো পণ্য নেই। অনুগ্রহ করে পণ্য যোগ করুন।");
+      return;
+    }
+
+    if (!/^01[3-9]\d{8}$/.test(phone.replace(/\s+/g, ""))) {
+      setErrorMessage("অনুগ্রহ করে সঠিক ১১ ডিজিটের মোবাইল নম্বর দিন (যেমন: 017xxxxxxxx)");
+      return;
+    }
+
+    if (!address.trim() || address.trim().length < 5) {
+      setErrorMessage("অনুগ্রহ করে আপনার সম্পূর্ণ ডেলিভারি ঠিকানা প্রদান করুন।");
+      return;
+    }
+
+    // 🎯 If Automated bKash is selected: open authentic bKash PGW Popup!
+    if (paymentMethod === "bkash_auto") {
+      setMfsGateway("bkash");
+      setIsMfsModalOpen(true);
+      return;
+    }
+
+    // 🎯 If Automated Nagad is selected: open authentic Nagad PGW Popup!
+    if (paymentMethod === "nagad_auto") {
+      setMfsGateway("nagad");
+      setIsMfsModalOpen(true);
+      return;
+    }
+
+    // If Manual bKash/Nagad/Rocket is selected: check TrxID
+    if (["bkash_manual", "nagad_manual", "rocket_manual"].includes(paymentMethod)) {
+      if (!manualTrxId.trim() || manualTrxId.trim().length < 5) {
+        setErrorMessage("ম্যানুয়াল পেমেন্টের ট্রানজেকশন আইডি (TrxID) আবশ্যক।");
+        return;
+      }
+    }
+
+    // Proceed for COD or Manual Payment
+    await finalizeOrder();
+  };
+
 
   const availableDistricts = deliveryZones
     .filter((z) => z.division === division)
@@ -734,6 +768,20 @@ export default function CheckoutForm() {
           </div>
         </div>
       </div>
+
+      {/* 💳 Authentic bKash & Nagad Payment Gateway Modal (Phone -> OTP -> PIN -> Auto Pay) */}
+      <MfsPaymentModal
+        isOpen={isMfsModalOpen}
+        gateway={mfsGateway}
+        amount={grandTotal}
+        customerPhone={phone}
+        onClose={() => setIsMfsModalOpen(false)}
+        onSuccess={async (paymentData) => {
+          setIsMfsModalOpen(false);
+          await finalizeOrder(paymentData);
+        }}
+      />
     </form>
   );
 }
+

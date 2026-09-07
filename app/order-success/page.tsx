@@ -8,6 +8,8 @@ import { useState, Suspense } from "react";
 function SuccessContent() {
   const searchParams = useSearchParams();
   const invoiceId = searchParams.get("invoiceId") || "SG-ORDER";
+  const trxId = searchParams.get("trxId");
+  const paymentStatus = searchParams.get("paymentStatus");
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
@@ -25,34 +27,48 @@ function SuccessContent() {
 
         <div>
           <span className="text-xs font-bold text-emerald-600 uppercase tracking-widest block mb-1">
-            Order Confirmed
+            {paymentStatus === "paid" ? "Payment Successful & Order Confirmed" : "Order Confirmed"}
           </span>
           <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
             ধন্যবাদ! আপনার অর্ডারটি সফল হয়েছে
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-2 leading-relaxed">
-            খুব শীঘ্রই আমাদের কাস্টমার প্রতিনিধি আপনার সাথে যোগাযোগ করে ডেলিভারি কনফার্ম করবেন।
+            {paymentStatus === "paid"
+              ? "আপনার অনলাইন পেমেন্ট সফলভাবে গ্রহণ করা হয়েছে। দ্রুত পার্সেল পাঠানো হবে।"
+              : "খুব শীঘ্রই আমাদের কাস্টমার প্রতিনিধি আপনার সাথে যোগাযোগ করে ডেলিভারি কনফার্ম করবেন।"}
           </p>
         </div>
 
-        {/* Invoice Card */}
-        <div className="bg-slate-50 rounded-2xl p-4 border border-dashed border-slate-200 flex items-center justify-between">
-          <div className="text-left">
-            <span className="text-[11px] text-slate-400 font-semibold block uppercase">
-              ইনভয়েস আইডি (Invoice ID):
-            </span>
-            <span className="text-base font-black text-slate-900 font-mono tracking-wider">
-              {invoiceId}
-            </span>
+        {/* Invoice & Payment Card */}
+        <div className="bg-slate-50 rounded-2xl p-4 border border-dashed border-slate-200 space-y-2">
+          <div className="flex items-center justify-between">
+            <div className="text-left">
+              <span className="text-[11px] text-slate-400 font-semibold block uppercase">
+                ইনভয়েস আইডি (Invoice ID):
+              </span>
+              <span className="text-base font-black text-slate-900 font-mono tracking-wider">
+                {invoiceId}
+              </span>
+            </div>
+            <button
+              onClick={handleCopy}
+              className="flex items-center gap-1.5 bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold px-3 py-2 rounded-xl border border-slate-200 transition-colors shadow-xs cursor-pointer"
+            >
+              <Copy size={13} />
+              <span>{copied ? "কপি হয়েছে!" : "কপি"}</span>
+            </button>
           </div>
-          <button
-            onClick={handleCopy}
-            className="flex items-center gap-1.5 bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold px-3 py-2 rounded-xl border border-slate-200 transition-colors shadow-xs"
-          >
-            <Copy size={13} />
-            <span>{copied ? "কপি হয়েছে!" : "কপি"}</span>
-          </button>
+
+          {trxId && (
+            <div className="pt-2 border-t border-slate-200/80 flex items-center justify-between text-xs">
+              <span className="text-slate-500 font-medium">ট্রানজেকশন আইডি:</span>
+              <span className="font-mono font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                TrxID: {trxId}
+              </span>
+            </div>
+          )}
         </div>
+
 
         {/* Action Buttons */}
         <div className="space-y-3 pt-2">
