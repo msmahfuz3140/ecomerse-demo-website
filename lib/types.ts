@@ -89,3 +89,66 @@ export interface IDeliveryZone {
   deliveryCharge: number;
   estimatedDelivery?: string;
 }
+
+export interface IUser {
+  id: string;
+  name: string;
+  phone: string;
+  email: string;
+  role: "admin" | "customer";
+  avatar?: string;
+}
+
+export interface IOrder {
+  _id: string;
+  invoiceId: string;
+  customer: {
+    name: string;
+    phone: string;
+    address: string;
+    division: string;
+    district: string;
+    note?: string;
+  };
+  items: Array<{
+    productId?: string;
+    name: string;
+    price: number;
+    quantity: number;
+    image?: string;
+    variantInfo?: string;
+  }>;
+  subtotal: number;
+  deliveryCharge: number;
+  discount: number;
+  grandTotal: number;
+  paymentMethod: string;
+  paymentStatus: "pending" | "paid" | "pending_verification" | "failed";
+  manualPaymentDetails?: {
+    trxId?: string;
+    senderNumber?: string;
+  };
+  status: "pending" | "confirmed" | "processing" | "shipped" | "delivered" | "cancelled";
+  timeline?: Array<{
+    status: string;
+    timestamp: string | Date;
+    note?: string;
+  }>;
+  createdAt: string;
+}
+
+export interface IIncompleteOrder {
+  _id: string;
+  phone: string;
+  name?: string;
+  address?: string;
+  division?: string;
+  district?: string;
+  items?: any[];
+  subtotal?: number;
+  deliveryCharge?: number;
+  isConverted: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+

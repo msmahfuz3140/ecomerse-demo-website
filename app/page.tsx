@@ -10,6 +10,7 @@ import {
   Store,
 } from "lucide-react";
 import ProductCard from "@/components/product/ProductCard";
+import PromoAdBanners from "@/components/home/PromoAdBanners";
 import { api } from "@/lib/api";
 
 export default async function HomePage() {
@@ -28,7 +29,7 @@ export default async function HomePage() {
   );
 
   return (
-    <div className="space-y-12 pb-16">
+    <div className="space-y-12 pb-16 bg-[#f8fafc]">
       {/* 1. Hero Banner Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
         <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-[#1a223f] via-[#243058] to-[#303d6e] text-white p-8 sm:p-12 lg:p-16 shadow-xl border border-indigo-900/40">
@@ -66,44 +67,44 @@ export default async function HomePage() {
 
       {/* 2. Trust Badges / Value Proposition */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-5 rounded-2xl bg-white border border-slate-100 shadow-xs">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
           <div className="flex items-center gap-3.5 p-2">
-            <div className="w-11 h-11 rounded-2xl bg-indigo-50 text-[#303d6e] flex items-center justify-center shrink-0">
+            <div className="w-11 h-11 rounded-2xl bg-indigo-50 text-[#303d6e] flex items-center justify-center shrink-0 border border-indigo-100">
               <Truck size={22} />
             </div>
             <div>
               <h4 className="text-xs sm:text-sm font-bold text-slate-900">দ্রুততম ডেলিভারি</h4>
-              <p className="text-[11px] text-slate-400 font-medium">সারা বাংলাদেশে ক্যাশ অন ডেলিভারি</p>
+              <p className="text-[11px] text-slate-500 font-medium">সারা বাংলাদেশে ক্যাশ অন ডেলিভারি</p>
             </div>
           </div>
 
           <div className="flex items-center gap-3.5 p-2">
-            <div className="w-11 h-11 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+            <div className="w-11 h-11 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-100">
               <ShieldCheck size={22} />
             </div>
             <div>
               <h4 className="text-xs sm:text-sm font-bold text-slate-900">১০০% আসল পণ্য</h4>
-              <p className="text-[11px] text-slate-400 font-medium">অফিশিয়াল ব্র্যান্ড ওয়ারেন্টি</p>
+              <p className="text-[11px] text-slate-500 font-medium">অফিশিয়াল ব্র্যান্ড ওয়ারেন্টি</p>
             </div>
           </div>
 
           <div className="flex items-center gap-3.5 p-2">
-            <div className="w-11 h-11 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+            <div className="w-11 h-11 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 border border-amber-100">
               <RotateCcw size={22} />
             </div>
             <div>
               <h4 className="text-xs sm:text-sm font-bold text-slate-900">৭ দিনের রিটার্ন</h4>
-              <p className="text-[11px] text-slate-400 font-medium">সহজ রিফান্ড ও রিটার্ন সুবিধা</p>
+              <p className="text-[11px] text-slate-500 font-medium">সহজ রিফান্ড ও রিটার্ন সুবিধা</p>
             </div>
           </div>
 
           <div className="flex items-center gap-3.5 p-2">
-            <div className="w-11 h-11 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
+            <div className="w-11 h-11 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0 border border-purple-100">
               <Headphones size={22} />
             </div>
             <div>
               <h4 className="text-xs sm:text-sm font-bold text-slate-900">লাইভ সাপোর্ট</h4>
-              <p className="text-[11px] text-slate-400 font-medium">২৪/৭ কাস্টমার কেয়ার সার্ভিস</p>
+              <p className="text-[11px] text-slate-500 font-medium">২৪/৭ কাস্টমার কেয়ার সার্ভিস</p>
             </div>
           </div>
         </div>
@@ -116,7 +117,7 @@ export default async function HomePage() {
             <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
               পপুলার ক্যাটাগরি
             </h2>
-            <p className="text-xs text-slate-400 font-medium mt-0.5">
+            <p className="text-xs text-slate-500 font-medium mt-0.5">
               আপনার পছন্দের ক্যাটাগরি থেকে ব্রাউজ করুন
             </p>
           </div>
@@ -127,9 +128,9 @@ export default async function HomePage() {
             <Link
               key={cat._id}
               href={`/category/${cat.slug}`}
-              className="group bg-white rounded-2xl p-4 border border-slate-100 shadow-xs hover:shadow-lg hover:border-indigo-100 transition-all text-center flex flex-col items-center"
+              className="group bg-white rounded-2xl p-4 border border-slate-200/80 shadow-xs hover:shadow-lg hover:border-indigo-200 transition-all text-center flex flex-col items-center"
             >
-              <div className="w-20 h-20 rounded-2xl overflow-hidden bg-slate-50 mb-3 group-hover:scale-105 transition-transform">
+              <div className="w-20 h-20 rounded-2xl overflow-hidden bg-slate-50 mb-3 group-hover:scale-105 transition-transform border border-slate-100">
                 <img
                   src={cat.image || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&auto=format&fit=crop&q=60"}
                   alt={cat.name}
@@ -144,7 +145,10 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 4. Hot Deals Section */}
+      {/* 4. Promotional Advertisement Banners (New Feature) */}
+      <PromoAdBanners />
+
+      {/* 5. Hot Deals Section */}
       <section id="hot-deals" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-gradient-to-r from-red-600 via-rose-600 to-pink-600 rounded-3xl p-6 sm:p-8 shadow-xl text-white mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -178,7 +182,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 5. Electronics Showcase */}
+      {/* 6. Electronics Showcase */}
       {electronicsProducts.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between mb-6">
@@ -186,7 +190,7 @@ export default async function HomePage() {
               <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
                 Electronics & Gaming Setup
               </h2>
-              <p className="text-xs text-slate-400 font-medium mt-0.5">
+              <p className="text-xs text-slate-500 font-medium mt-0.5">
                 লেটেস্ট কম্পিউটার, এক্সেসরিজ ও মনিটর
               </p>
             </div>
@@ -206,7 +210,7 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* 6. Fashion Showcase */}
+      {/* 7. Fashion Showcase */}
       {fashionProducts.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between mb-6">
@@ -214,7 +218,7 @@ export default async function HomePage() {
               <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
                 Trendy Men's Fashion
               </h2>
-              <p className="text-xs text-slate-400 font-medium mt-0.5">
+              <p className="text-xs text-slate-500 font-medium mt-0.5">
                 প্রিমিয়াম সুতি শার্ট ও স্ট্রেচ চিনো প্যান্ট কালেকশন
               </p>
             </div>
@@ -234,18 +238,18 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* 7. Multi-Vendor / Verified Sellers Spotlight */}
+      {/* 8. Multi-Vendor / Verified Sellers Spotlight */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-indigo-50 text-[#303d6e] flex items-center justify-center font-bold">
+            <div className="w-9 h-9 rounded-xl bg-indigo-50 text-[#303d6e] flex items-center justify-center font-bold border border-indigo-100">
               <Store size={18} />
             </div>
             <div>
               <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
                 আমাদের ভেরিফাইড শপসমূহ
               </h2>
-              <p className="text-xs text-slate-400 font-medium">
+              <p className="text-xs text-slate-500 font-medium">
                 টপ-রেটেড বিশ্বস্ত বিক্রেতাদের অফিশিয়াল স্টোর
               </p>
             </div>
@@ -262,7 +266,7 @@ export default async function HomePage() {
           {vendors.map((v) => (
             <div
               key={v._id}
-              className="bg-white rounded-3xl border border-slate-100 shadow-xs hover:shadow-lg transition-all overflow-hidden flex flex-col justify-between"
+              className="bg-white rounded-3xl border border-slate-200/80 shadow-xs hover:shadow-lg transition-all overflow-hidden flex flex-col justify-between"
             >
               <div
                 className="h-28 bg-cover bg-center relative"

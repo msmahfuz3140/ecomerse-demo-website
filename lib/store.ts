@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { ICartItem, IProduct } from "./types";
+import { ICartItem, IProduct, IUser } from "./types";
 
 interface CartStore {
   items: ICartItem[];
@@ -88,3 +88,48 @@ export const useQuickViewStore = create<QuickViewStore>((set) => ({
   openQuickView: (product) => set({ isOpen: true, product }),
   closeQuickView: () => set({ isOpen: false, product: null }),
 }));
+
+interface AuthStore {
+  user: IUser | null;
+  isLoggedIn: boolean;
+  login: (user: IUser) => void;
+  logout: () => void;
+}
+
+export const useAuthStore = create<AuthStore>((set) => {
+  // Initialize from localStorage if on browser
+  let initialUser: IUser | null = null;
+  let initialLoggedIn = false;
+
+  if (typeof window !== "undefined") {
+    try {
+      const saved = localStorage.getItem("shopgenie_user");
+      if (saved) {
+        initialUser = JSON.parse(saved);
+        initialLoggedIn = true;
+      }
+    } catch {}
+  }
+
+  return {
+    user: initialUser,
+    isLoggedIn: initialLoggedIn,
+    login: (user) => {
+      if (typeof window !== "undefined") {
+        try {
+          localStorage.setItem("shopgenie_user", JSON.stringify(user));
+        } catch {}
+      }
+      set({ user, isLoggedIn: true });
+    },
+    logout: () => {
+      if (typeof window !== "undefined") {
+        try {
+          localStorage.removeItem("shopgenie_user");
+        } catch {}
+      }
+      set({ user: null, isLoggedIn: false });
+    },
+  };
+});
+
