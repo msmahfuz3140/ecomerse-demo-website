@@ -24,6 +24,16 @@ export default async function HomePage() {
   const electronicsProducts = products.filter(
     (p) => (typeof p.category === "object" ? p.category.slug : p.category) === "electronics"
   );
+  const womenProducts = products.filter((p) => {
+    const slug = typeof p.category === "object" ? p.category.slug : p.category;
+    return slug === "womens-fashion" || slug === "beauty-cosmetics";
+  });
+  const babyProducts = products.filter(
+    (p) => (typeof p.category === "object" ? p.category.slug : p.category) === "baby-kids"
+  );
+  const homeElectricProducts = products.filter(
+    (p) => (typeof p.category === "object" ? p.category.slug : p.category) === "home-appliances"
+  );
   const fashionProducts = products.filter(
     (p) => (typeof p.category === "object" ? p.category.slug : p.category) === "fashion"
   );
@@ -210,7 +220,106 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* 7. Fashion Showcase */}
+      {/* 7. Women's Exclusive Fashion & Beauty */}
+      {womenProducts.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold uppercase tracking-wider text-pink-600 bg-pink-50 px-2.5 py-0.5 rounded-full">
+                  Women's Exclusive
+                </span>
+              </div>
+              <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight mt-1">
+                মেয়েদের ফ্যাশন ও রূপচর্চা কালেকশন
+              </h2>
+              <p className="text-xs text-slate-500 font-medium mt-0.5">
+                আসল ঐতিহ্যবাহী জামদানি শাড়ি, পার্টি থ্রি-পিস, হ্যান্ডব্যাগ ও ব্রাইটনিং সিরাম
+              </p>
+            </div>
+            <Link
+              href="/category/womens-fashion"
+              className="text-xs sm:text-sm font-bold text-pink-600 hover:text-pink-700 flex items-center gap-1"
+            >
+              সব দেখুন <ArrowRight size={15} />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+            {womenProducts.map((p) => (
+              <ProductCard key={p._id} product={p} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* 8. Baby & Kids Care Collection */}
+      {babyProducts.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full">
+                  Baby & Toddlers
+                </span>
+              </div>
+              <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight mt-1">
+                বেবি ও বাচ্চাদের কালেকশন
+              </h2>
+              <p className="text-xs text-slate-500 font-medium mt-0.5">
+                ১০০% অর্গানিক নরম সুতি রম্পার, ফিডার সেট, ফোল্ডিং স্ট্রোলার ও শিক্ষণীয় খেলনা
+              </p>
+            </div>
+            <Link
+              href="/category/baby-kids"
+              className="text-xs sm:text-sm font-bold text-emerald-600 hover:text-emerald-700 flex items-center gap-1"
+            >
+              সব দেখুন <ArrowRight size={15} />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+            {babyProducts.map((p) => (
+              <ProductCard key={p._id} product={p} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* 9. Smart Home & Kitchen Electric Appliances */}
+      {homeElectricProducts.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold uppercase tracking-wider text-amber-600 bg-amber-50 px-2.5 py-0.5 rounded-full">
+                  Smart Home
+                </span>
+              </div>
+              <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight mt-1">
+                হোম ও কিচেন ইলেকট্রনিক্স
+              </h2>
+              <p className="text-xs text-slate-500 font-medium mt-0.5">
+                ডিজিটাল এয়ার ফ্রায়ার, মিক্সার ব্লেন্ডার, স্টিম আয়রন ও অটোমেটিক রোবট ক্লিনার
+              </p>
+            </div>
+            <Link
+              href="/category/home-appliances"
+              className="text-xs sm:text-sm font-bold text-amber-600 hover:text-amber-700 flex items-center gap-1"
+            >
+              সব দেখুন <ArrowRight size={15} />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+            {homeElectricProducts.map((p) => (
+              <ProductCard key={p._id} product={p} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* 10. Men's Fashion Showcase */}
       {fashionProducts.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between mb-6">
